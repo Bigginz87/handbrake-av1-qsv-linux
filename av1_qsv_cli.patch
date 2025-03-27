@@ -1,0 +1,10 @@
+--- a/libhb/hb.c
++++ b/libhb/hb.c
+@@ int hb_global_init()
+ #if HB_PROJECT_FEATURE_QSV
+     if (!disable_hardware)
+     {
+         hb_register(&hb_encqsv);
++        hb_video_encoder_add("qsv_av1_10bit", HB_VCODEC_AV1_QSV, &qsv_info);
+     }
+ #endif
