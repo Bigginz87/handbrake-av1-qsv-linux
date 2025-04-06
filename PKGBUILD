@@ -1,13 +1,12 @@
 # Maintainer: You!
 pkgname=handbrake-av1-qsv
 pkgver=1.9.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Multithreaded video transcoder with AV1 QSV CLI support"
 arch=('x86_64')
 url="https://handbrake.fr/"
 license=('GPL')
 
-# Runtime deps for HandBrake itself, plus QSV (intel-media-sdk, intel-media-driver, libmfx).
 depends=(
   'gtk4'
   'libass'
@@ -27,12 +26,11 @@ depends=(
   'libjpeg-turbo'
   'libva'
   'libvpl'
-  'intel-media-sdk'     # QSV runtime
-  'intel-media-driver'  # iHD driver for Intel GPU
-  'libmfx'              # MFX dispatcher
+  'intel-media-sdk'
+  'intel-media-driver'
+  'libmfx'
 )
 
-# Build-time deps for building HandBrake with QSV on Arch
 makedepends=(
   'git'
   'cmake'
@@ -41,6 +39,7 @@ makedepends=(
   'yasm'
   'intltool'
   'meson'
+  # 'cctools'  # removed since it's not in official repos
   'autoconf'
   'automake'
   'libtool'
@@ -51,7 +50,6 @@ makedepends=(
 provides=('handbrake')
 conflicts=('handbrake')
 
-# We clone the official HandBrake repo at tag 1.9.2
 source=(
   "git+https://github.com/HandBrake/HandBrake.git#tag=${pkgver}"
   "av1_qsv_cli.patch"
@@ -61,18 +59,27 @@ sha256sums=('SKIP'
 
 prepare() {
   cd HandBrake
-  # Apply your custom patch enabling AV1 QSV CLI, e.g. adding qsv_av1_10bit, etc.
   patch -p1 < ../av1_qsv_cli.patch
+
+  # Fix x265 submodule's old cmake policy usage:
+  sed -i '/cmake_policy(SET CMP00/d' contrib/x265_8bit/CMakeLists.txt
+  sed -i 's/cmake_minimum_required(VERSION 2.8.12)/cmake_minimum_required(VERSION 3.5)/' contrib/x265_8bit/CMakeLists.txt
+
+  # If 10bit/12bit modules exist, fix them too:
+  sed -i '/cmake_policy(SET CMP00/d' contrib/x265_10bit/CMakeLists.txt 2>/dev/null || true
+  sed -i 's/cmake_minimum_required(VERSION 2.8.12)/cmake_minimum_required(VERSION 3.5)/' contrib/x265_10bit/CMakeLists.txt 2>/dev/null || true
+
+  sed -i '/cmake_policy(SET CMP00/d' contrib/x265_12bit/CMakeLists.txt 2>/dev/null || true
+  sed -i 's/cmake_minimum_required(VERSION 2.8.12)/cmake_minimum_required(VERSION 3.5)/' contrib/x265_12bit/CMakeLists.txt 2>/dev/null || true
 }
 
 build() {
   cd HandBrake
-  # HandBrake's 'configure' script will detect meson, cctools (lipo), ninja, etc.
   ./configure --launch-jobs="$(nproc)" --launch
   make -C build
 }
 
 package() {
   cd HandBrake/build
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR="$pkgdir" install
 }
