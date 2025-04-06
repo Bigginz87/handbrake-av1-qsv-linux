@@ -41,7 +41,6 @@ makedepends=(
   'yasm'
   'intltool'
   'meson'
-  'cctools'     # provides lipo
   'autoconf'
   'automake'
   'libtool'
