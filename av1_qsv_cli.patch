@@ -1,3 +1,17 @@
+diff --git a/libhb/handbrake/encoder.h b/libhb/handbrake/encoder.h
+index 1234567..abcdef0 100644
+--- a/libhb/handbrake/encoder.h
++++ b/libhb/handbrake/encoder.h
+@@ -47,6 +47,8 @@
+ #define HB_VCODEC_SVT_AV1       0xFFFF0020
++
++// Custom AV1 QSV encoder
++#define HB_VCODEC_AV1_QSV       0xFFFF0021
++
++extern const hb_encoder qsv_info;
+
+diff --git a/libhb/hb.c b/libhb/hb.c
+index abcdef1..9876543 100644
 --- a/libhb/hb.c
 +++ b/libhb/hb.c
 @@ -156,6 +156,7 @@ int hb_global_init()
@@ -9,3 +23,4 @@
      }
  #endif
      hb_x264_global_init();
+
