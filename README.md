@@ -16,7 +16,14 @@ HEAD
 - ❌ No GUI hacks, no weird build flags
 
 ---
-
+## prep
+```bash
+nano /etc/makepkg.conf
+```
+## Find the MAKEFLAGS line and change it to:
+```
+MAKEFLAGS="-j$(nproc)"
+```
 ## 🛠 How to Build
 ```bash
 gpg --recv-keys 5452E231DFDBCA11
