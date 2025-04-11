@@ -20,6 +20,9 @@ HEAD
 ```bash
 nano /etc/makepkg.conf
 ```
+```
+sudo pacman -S --needed base-devel
+```
 ## Find the MAKEFLAGS line and change it to:
 ```
 MAKEFLAGS="-j$(nproc)"
